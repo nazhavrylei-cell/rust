@@ -6,14 +6,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Compile
-        run: rustc -O --edition 2021 selection.rs -o selection
-
-      - name: Run demo
-        run: printf 'demo\nsolve\nquit\n' | ./selection
-        
+      - uses: actions/checkout@v5
+      - run: rustc -O --edition 2021 selection.rs -o selection
+      - uses: actions/upload-artifact@v4
+        with:
+          name: selection-${{ matrix.os }}
+          path: |
+            selection
+            selection.exe
